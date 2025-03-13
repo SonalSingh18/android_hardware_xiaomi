@@ -11,6 +11,7 @@ soong_config_module_type {
     value_variables: [
         "DOUBLE_TAP_PATH",
         "SINGLE_TAP_PATH",
+        "UDFPS_PATH",
     ],
     properties: ["cppflags"],
 }
@@ -28,6 +29,12 @@ xiaomi_sensors_hal_cc_defaults {
             cppflags: ["-DSINGLE_TAP_PATH=\"%s\""],
             conditions_default: {
                 cppflags: ["-DSINGLE_TAP_PATH=\"/sys/devices/platform/soc/884000.i2c/i2c-1/1-0038/single_tap_pressed\""],
+            },
+        },
+        UDFPS_PATH: {
+            cppflags: ["-DUDFPS_PATH=\"%s\""],
+            conditions_default: {
+                cppflags: ["-DUDFPS_PATH=\"/sys/class/touch/touch_dev/fod_press_status\""],
             },
         },
     },
