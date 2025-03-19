@@ -22,8 +22,6 @@
 
 #include <cmath>
 
-namespace {
-
 static bool readBool(int fd, bool seek) {
     char c;
     int rc;
@@ -44,8 +42,6 @@ static bool readBool(int fd, bool seek) {
 
     return c != '0';
 }
-
-}  // anonymous namespace
 
 namespace android {
 namespace hardware {
@@ -99,7 +95,7 @@ const SensorInfo& Sensor::getSensorInfo() const {
 
 void Sensor::batch(int32_t samplingPeriodNs) {
     samplingPeriodNs =
-            std::clamp(samplingPeriodNs, mSensorInfo.minDelay * 1000, mSensorInfo.maxDelay * 1000);
+        std::clamp(samplingPeriodNs, mSensorInfo.minDelay * 1000, mSensorInfo.maxDelay * 1000);
 
     if (mSamplingPeriodNs != samplingPeriodNs) {
         mSamplingPeriodNs = samplingPeriodNs;
@@ -218,9 +214,9 @@ OneShotSensor::OneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callba
 }
 
 SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
-        int32_t sensorHandle, ISensorsEventCallback* callback, const std::string& pollPath,
-        const std::string& enablePath, const std::string& name, const std::string& typeAsString,
-        SensorType type)
+    int32_t sensorHandle, ISensorsEventCallback* callback, const std::string& pollPath,
+    const std::string& name, const std::string& typeAsString,
+    SensorType type)
     : OneShotSensor(sensorHandle, callback) {
     mSensorInfo.name = name;
     mSensorInfo.type = type;
@@ -229,8 +225,6 @@ SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
     mSensorInfo.resolution = 1.0f;
     mSensorInfo.power = 0;
     mSensorInfo.flags |= SensorFlagBits::WAKE_UP;
-
-    mEnableStream.open(enablePath);
 
     int rc;
 
@@ -252,24 +246,18 @@ SysfsPollingOneShotSensor::SysfsPollingOneShotSensor(
     }
 
     mPolls[0] = {
-            .fd = mWaitPipeFd[0],
-            .events = POLLIN,
+        .fd = mWaitPipeFd[0],
+        .events = POLLIN,
     };
 
     mPolls[1] = {
-            .fd = mPollFd,
-            .events = POLLERR | POLLPRI,
+        .fd = mPollFd,
+        .events = POLLERR | POLLPRI,
     };
 }
 
 SysfsPollingOneShotSensor::~SysfsPollingOneShotSensor() {
     interruptPoll();
-}
-
-void SysfsPollingOneShotSensor::writeEnable(bool enable) {
-    if (mEnableStream) {
-        mEnableStream << (enable ? '1' : '0') << std::flush;
-    }
 }
 
 void SysfsPollingOneShotSensor::activate(bool enable, bool notify, bool lock) {
@@ -280,7 +268,6 @@ void SysfsPollingOneShotSensor::activate(bool enable, bool notify, bool lock) {
     }
 
     if (mIsEnabled != enable) {
-        writeEnable(enable);
 
         mIsEnabled = enable;
 
